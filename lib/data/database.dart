@@ -18,13 +18,15 @@ class DatabaseHelper {
     if (_database != null) return _database;
 
     _database = await _initDatabase();
+    return _database;
   }
 
   _initDatabase() async {
     var databasePath = await getDatabasesPath();
     String path = join(databasePath, _databaseName);
     return await openDatabase(path,version:_databaseVersion,
-      onCreate:_onCreate,onUpgrade:_onUpgrade);
-    );
+      onCreate:_onCreate,onUpgrade:_onUpgrade); 
   }
-}
+
+  Future _onCreate
+} //DatabaseHelper
