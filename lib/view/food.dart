@@ -1,4 +1,5 @@
 import 'package:eyebody/data/data.dart';
+import 'package:eyebody/data/database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,8 +27,15 @@ class _FoodAddPageState extends State<FoodAddPage> {
         appBar: AppBar(
           actions: [
             TextButton(
-              child: const Text("저장"),
-              onPressed: () {},
+              child: const Text("저장", style: TextStyle(color: Colors.white)),
+              onPressed: () async {
+                food.memo = memoController.text;
+                food.kcal = int.tryParse(kcalController.text) ?? 0;
+
+                final dbHelper = DatabaseHelper.instance;
+                await dbHelper.insertFood(food);
+                Navigator.of(context).pop();
+              },
             )
           ],
         ),
@@ -42,41 +50,51 @@ class _FoodAddPageState extends State<FoodAddPage> {
               );
             } else if (idx == 1) {
               return Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("칼로리"),
-                  Container(
-                    width: 100,
-                    child: TextField(
-                      controller: kcalController,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                ],
-              ));
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("칼로리", style: TextStyle(fontSize: 16)),
+                      Container(
+                        width: 100,
+                        child: TextField(
+                          controller: kcalController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    ],
+                  ));
             } else if (idx == 2) {
               return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                width: 300,
+                height: 300,
                 child: Container(
                   child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: InkWell(
-                          child: AspectRatio(
-                              child: food.image.isEmpty
-                                  ? Image.asset("assets/img/rice.png")
-                                  : AssetThumb(
-                                      asset:
-                                          Asset(food.image, "food.png", 0, 0),
-                                      width: 300,
-                                      height: 300),
-                              aspectRatio: 1 / 1))),
+                    alignment: Alignment.center,
+                    child: InkWell(
+                        child: AspectRatio(
+                            child: food.image.isEmpty
+                                ? Image.asset("assets/img/rice.png")
+                                : AssetThumb(
+                                    asset: Asset(food.image, "food.png", 0, 0),
+                                    width: 300,
+                                    height: 300),
+                            aspectRatio: 1 / 1),
+                        onTap: () {
+                          selectImage();
+                        }),
+                  ),
                 ),
               );
             } else if (idx == 3) {
               return Container(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                 child: CupertinoSegmentedControl(
                   children: {
                     0: Text("아침"),
@@ -95,21 +113,41 @@ class _FoodAddPageState extends State<FoodAddPage> {
               );
             } else if (idx == 4) {
               return Container(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                   child: Column(
-                children: [
-                  Text("메모"),
-                  TextField(
-                      maxLines: 10,
-                      minLines: 10,
-                      keyboardType: TextInputType.multiline,
-                      controller: memoController,
-                      decoration: InputDecoration(border: OutlineInputBorder()))
-                ],
-              ));
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        "메모",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      TextField(
+                          maxLines: 10,
+                          minLines: 10,
+                          keyboardType: TextInputType.multiline,
+                          controller: memoController,
+                          decoration:
+                              InputDecoration(border: OutlineInputBorder()))
+                    ],
+                  ));
             }
             return Container();
           },
           itemCount: 5,
         )));
+  }
+
+  Future<void> selectImage() async {
+    final __img =
+        await MultiImagePicker.pickImages(maxImages: 1, enableCamera: true);
+
+    if (__img.length < 1) {
+      return;
+    }
+
+    setState(() {
+      food.image = __img.first.identifier;
+    });
   }
 }
