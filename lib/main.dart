@@ -1,4 +1,8 @@
+import 'package:eyebody/data/data.dart';
+import 'package:eyebody/view/utils.dart';
 import 'package:flutter/material.dart';
+
+import 'view/food.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'EyeBody'),
     );
   }
 }
@@ -38,7 +42,41 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          showModalBottomSheet(
+              context: context,
+              backgroundColor: Colors.white,
+              builder: (ctx) {
+                return SizedBox(
+                    height: 200,
+                    child: Column(
+                      children: [
+                        TextButton(
+                            child: const Text("식단"),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (ctx) => FoodAddPage(
+                                          food: Food(
+                                        date:
+                                            Utils.getFormatTime(DateTime.now()),
+                                        kcal: 0,
+                                        memo: "",
+                                        type: 0,
+                                        image: "",
+                                      ))));
+                            }),
+                        TextButton(
+                          child: const Text("운동"),
+                          onPressed: () {},
+                        ),
+                        TextButton(
+                          child: const Text("눈바디"),
+                          onPressed: () {},
+                        ),
+                      ],
+                    ));
+              });
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
