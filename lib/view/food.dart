@@ -42,22 +42,27 @@ class _FoodAddPageState extends State<FoodAddPage> {
               );
             } else if (idx == 1) {
               return Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                   child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("칼로리"),
-                  Container(
-                    width: 100,
-                    child: TextField(
-                      controller: kcalController,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                ],
-              ));
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text("칼로리",
+                          style: TextStyle(
+                            fontSize: 16,
+                          )),
+                      Container(
+                        width: 100,
+                        child: TextField(
+                          controller: kcalController,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    ],
+                  ));
             } else if (idx == 2) {
               return Container(
                 child: Container(
