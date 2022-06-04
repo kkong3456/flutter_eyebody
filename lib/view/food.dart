@@ -52,10 +52,10 @@ class _FoodAddPageState extends State<FoodAddPage> {
                   ),
                 ],
               ));
-            }else if(idx==2){
+            } else if (idx == 2) {
               return Container(
-                child:Container(),
-              )
+                child: Container(),
+              );
             }
             return Container();
           },
