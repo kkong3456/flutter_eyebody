@@ -37,7 +37,7 @@ class DatabaseHelper {
         type INTEGER DEFAULT 0,
         kcal INTEGER DEFAULT 0,
         image String,
-        memo String,
+        memo String
       )''');
 
     await db.execute('''
@@ -47,7 +47,7 @@ class DatabaseHelper {
         time INTEGER DEFAULT 0,
         name String,
         image String,
-        memo String,
+        memo String
       )''');
 
     await db.execute('''
@@ -55,7 +55,7 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date INTEGER DEFAULT 0,
         weight INTEGER DEFAULT 0,
-        image String,
+        image String
       )''');
   }
 
