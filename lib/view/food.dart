@@ -65,9 +65,13 @@ class _FoodAddPageState extends State<FoodAddPage> {
                   ));
             } else if (idx == 2) {
               return Container(
+                color: Colors.black26,
+                // padding:
+                // const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                 child: Container(
                   child: Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: Alignment.center,
                       child: InkWell(
                           child: AspectRatio(
                               child: food.image.isEmpty
@@ -75,13 +79,14 @@ class _FoodAddPageState extends State<FoodAddPage> {
                                   : AssetThumb(
                                       asset:
                                           Asset(food.image, "food.png", 0, 0),
-                                      width: 300,
-                                      height: 300),
+                                      width: 200,
+                                      height: 200),
                               aspectRatio: 1 / 1))),
                 ),
               );
             } else if (idx == 3) {
               return Container(
+                margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                 child: CupertinoSegmentedControl(
                   children: {
                     0: Text("아침"),
@@ -100,17 +105,25 @@ class _FoodAddPageState extends State<FoodAddPage> {
               );
             } else if (idx == 4) {
               return Container(
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                   child: Column(
-                children: [
-                  Text("메모"),
-                  TextField(
-                      maxLines: 10,
-                      minLines: 10,
-                      keyboardType: TextInputType.multiline,
-                      controller: memoController,
-                      decoration: InputDecoration(border: OutlineInputBorder()))
-                ],
-              ));
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text("메모",
+                          style: TextStyle(
+                            fontSize: 16,
+                          )),
+                      SizedBox(height: 5),
+                      TextField(
+                          maxLines: 10,
+                          minLines: 10,
+                          keyboardType: TextInputType.multiline,
+                          controller: memoController,
+                          decoration:
+                              InputDecoration(border: OutlineInputBorder()))
+                    ],
+                  ));
             }
             return Container();
           },
