@@ -1,4 +1,5 @@
 import 'package:eyebody/data/data.dart';
+import 'package:eyebody/data/database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,8 +27,19 @@ class _FoodAddPageState extends State<FoodAddPage> {
         appBar: AppBar(
           actions: [
             TextButton(
-              child: const Text("저장"),
-              onPressed: () {},
+              child: const Text(
+                "저장",
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () async {
+                food.memo = memoController.text;
+                food.kcal = int.tryParse(kcalController.text) ?? 0;
+
+                final dbHelper = DatabaseHelper.instance;
+                await dbHelper.insertFood(food);
+
+                Navigator.of(context).pop();
+              },
             )
           ],
         ),
@@ -65,23 +77,27 @@ class _FoodAddPageState extends State<FoodAddPage> {
                   ));
             } else if (idx == 2) {
               return Container(
-                color: Colors.black26,
+                // color: Colors.black26,
                 // padding:
                 // const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                 child: Container(
                   child: Align(
-                      alignment: Alignment.center,
-                      child: InkWell(
-                          child: AspectRatio(
-                              child: food.image.isEmpty
-                                  ? Image.asset("assets/img/rice.png")
-                                  : AssetThumb(
-                                      asset:
-                                          Asset(food.image, "food.png", 0, 0),
-                                      width: 200,
-                                      height: 200),
-                              aspectRatio: 1 / 1))),
+                    alignment: Alignment.center,
+                    child: InkWell(
+                        child: AspectRatio(
+                            child: food.image.isEmpty
+                                ? Image.asset("assets/img/rice.png")
+                                : AssetThumb(
+                                    asset: Asset(food.image, "food.png", 0, 0),
+                                    width: 200,
+                                    height: 200),
+                            aspectRatio: 1 / 1),
+                        onTap: () {
+                          selectImage();
+                        }),
+                  ),
                 ),
               );
             } else if (idx == 3) {
@@ -129,5 +145,16 @@ class _FoodAddPageState extends State<FoodAddPage> {
           },
           itemCount: 5,
         )));
+  }
+
+  Future<void> selectImage() async {
+    final __img =
+        await MultiImagePicker.pickImages(maxImages: 1, enableCamera: true);
+    if (__img.length < 1) {
+      return;
+    }
+    setState(() {
+      food.image = __img.first.identifier;
+    });
   }
 }
