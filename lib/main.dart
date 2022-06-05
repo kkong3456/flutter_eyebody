@@ -6,6 +6,7 @@ import 'package:eyebody/view/workout.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import 'view/food.dart';
 
@@ -44,6 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Food> todayFood = [];
   List<Workout> todayWorkout = [];
   List<EyeBody> todayEyeBody = [];
+
+  CalendarController controller = CalendarController();
 
   final dbHelper = DatabaseHelper.instance;
   DateTime time = DateTime.now();
@@ -107,46 +110,51 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         TextButton(
                             child: const Text("식단"),
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
+                            onPressed: () async {
+                              await Navigator.of(context).push(
+                                MaterialPageRoute(
                                   builder: (ctx) => FoodAddPage(
-                                          food: Food(
-                                        date:
-                                            Utils.getFormatTime(DateTime.now()),
-                                        kcal: 0,
-                                        memo: "",
-                                        type: 0,
-                                        image: "",
-                                      ))));
+                                    food: Food(
+                                      date: Utils.getFormatTime(time),
+                                      kcal: 0,
+                                      memo: "",
+                                      type: 0,
+                                      image: "",
+                                    ),
+                                  ),
+                                ),
+                              );
+                              getHistories();
                             }),
                         TextButton(
                           child: const Text("운동"),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
+                          onPressed: () async {
+                            await Navigator.of(context).push(MaterialPageRoute(
                                 builder: (ctx) => WorkoutAddPage(
                                       workout: Workout(
-                                        date:
-                                            Utils.getFormatTime(DateTime.now()),
+                                        date: Utils.getFormatTime(time),
                                         time: 0,
                                         memo: "",
                                         name: "",
                                         image: "",
                                       ),
                                     )));
+                            getHistories();
                           },
                         ),
                         TextButton(
                           child: const Text("눈바디"),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
+                          onPressed: () async {
+                            await Navigator.of(context).push(MaterialPageRoute(
                               builder: (ctx) => EyeBodyAddPage(
                                 eyeBody: EyeBody(
-                                  date: Utils.getFormatTime(DateTime.now()),
+                                  date: Utils.getFormatTime(time),
                                   weight: 0,
                                   image: "",
                                 ),
                               ),
                             ));
+                            getHistories();
                           },
                         ),
                       ],
@@ -213,7 +221,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget getHistoryPage() {
-    return Container();
+    return Container(
+        child: ListView(
+      children: [
+        TableCalendar(
+            calendarController: controller,
+            onDaySelected: (date, events, holidays) {
+              time = date;
+              getHistories();
+            }),
+        getMainPage(),
+      ],
+    ));
   }
 
   Widget getChartPage() {
