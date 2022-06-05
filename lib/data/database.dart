@@ -108,7 +108,7 @@ class DatabaseHelper {
     }
   }
 
-  Future<List<Workout>> queryWorkOutByDate(int date) async {
+  Future<List<Workout>> queryWorkoutByDate(int date) async {
     Database db = await instance.database;
     List<Workout> workouts = [];
 

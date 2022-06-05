@@ -1,8 +1,11 @@
 import 'package:eyebody/data/data.dart';
+import 'package:eyebody/data/database.dart';
 import 'package:eyebody/view/body.dart';
 import 'package:eyebody/view/utils.dart';
 import 'package:eyebody/view/workout.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 import 'view/food.dart';
 
@@ -36,13 +39,62 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int currentIndex = 0;
+
+  List<Food> todayFood = [];
+  List<Workout> todayWorkout = [];
+  List<EyeBody> todayEyeBody = [];
+
+  final dbHelper = DatabaseHelper.instance;
+  DateTime time = DateTime.now();
+
+  void getHistories() async {
+    int d = Utils.getFormatTime(time);
+
+    todayFood = await dbHelper.queryFoodByDate(d);
+    todayWorkout = await dbHelper.queryWorkoutByDate(d);
+    todayEyeBody = await dbHelper.queryEyeBodyByDate(d);
+
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getHistories();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(),
+      body: getPage(),
+      bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed, //4개이상 아이템생성시 반드시  타입을 지정해야 함
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: "오늘",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today),
+              label: "기록",
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "통계"),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.photo_album_outlined),
+              label: "갤러리",
+            ),
+          ],
+          currentIndex: currentIndex,
+          onTap: (idx) {
+            setState(() {
+              currentIndex = idx;
+            });
+          }),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
@@ -104,6 +156,178 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget getPage() {
+    if (currentIndex == 0) {
+      return getMainPage();
+    } else if (currentIndex == 1) {
+      return getHistoryPage();
+    } else if (currentIndex == 2) {
+      return getChartPage();
+    } else if (currentIndex == 3) {
+      return getGalleryPage();
+    }
+    return Container();
+  }
+
+  Widget getMainPage() {
+    return Container(
+        child: Column(
+      children: [
+        Container(
+            height: 140,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: List.generate(todayFood.length, (idx) {
+                return Container(
+                  width: 140,
+                  child: FoodCard(food: todayFood[idx]),
+                );
+              }),
+            )),
+        Container(
+            height: 140,
+            child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: List.generate(todayWorkout.length, (idx) {
+                  return Container(
+                    width: 140,
+                    child: WorkoutCard(workout: todayWorkout[idx]),
+                  );
+                }))),
+        Container(
+            height: 140,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: List.generate(todayEyeBody.length, (idx) {
+                return Container(
+                  width: 140,
+                  child: EyeBodyCard(eyeBody: todayEyeBody[idx]),
+                );
+              }),
+            ))
+      ],
+    ));
+  }
+
+  Widget getHistoryPage() {
+    return Container();
+  }
+
+  Widget getChartPage() {
+    return Container();
+  }
+
+  Widget getGalleryPage() {
+    return Container();
+  }
+}
+
+class FoodCard extends StatelessWidget {
+  final Food food;
+
+  FoodCard({Key key, this.food}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      margin: const EdgeInsets.all(8),
+      child: ClipRRect(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: AssetThumb(
+                  asset: Asset(food.image, "food.png", 0, 0),
+                  width: 300,
+                  height: 300),
+            ),
+            Positioned.fill(
+              child: Container(color: Colors.black38),
+            ),
+            Container(
+                alignment: Alignment.center,
+                child: Text(
+                  "${['아침', '점심', '저녁', '간식'][food.type]}",
+                  style: TextStyle(color: Colors.white),
+                ))
+          ],
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+  }
+}
+
+class WorkoutCard extends StatelessWidget {
+  final Workout workout;
+  WorkoutCard({Key key, this.workout}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      margin: const EdgeInsets.all(8),
+      child: ClipRRect(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: AssetThumb(
+                  asset: Asset(workout.image, "food.png", 0, 0),
+                  width: 300,
+                  height: 300),
+            ),
+            Positioned.fill(
+              child: Container(color: Colors.black38),
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                "${workout.name}",
+                style: TextStyle(color: Colors.white),
+              ),
+            )
+          ],
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+  }
+}
+
+class EyeBodyCard extends StatelessWidget {
+  final EyeBody eyeBody;
+  EyeBodyCard({Key key, this.eyeBody}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      margin: const EdgeInsets.all(8),
+      child: ClipRRect(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: AssetThumb(
+                  asset: Asset(eyeBody.image, "food.png", 0, 0),
+                  width: 300,
+                  height: 300),
+            ),
+            Positioned.fill(
+              child: Container(color: Colors.black38),
+            ),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                "${eyeBody.weight}kg",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
     );
   }
 }
