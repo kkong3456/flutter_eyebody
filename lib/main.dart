@@ -1,5 +1,6 @@
 import 'package:eyebody/data/data.dart';
 import 'package:eyebody/view/utils.dart';
+import 'package:eyebody/view/workout.dart';
 import 'package:flutter/material.dart';
 
 import 'view/food.dart';
@@ -67,7 +68,19 @@ class _MyHomePageState extends State<MyHomePage> {
                             }),
                         TextButton(
                           child: const Text("운동"),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (ctx) => WorkoutAddPage(
+                                      workout: Workout(
+                                        date:
+                                            Utils.getFormatTime(DateTime.now()),
+                                        time: 0,
+                                        memo: "",
+                                        name: "",
+                                        image: "",
+                                      ),
+                                    )));
+                          },
                         ),
                         TextButton(
                           child: const Text("눈바디"),
