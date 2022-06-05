@@ -1,4 +1,5 @@
 import 'package:eyebody/data/data.dart';
+import 'package:eyebody/view/body.dart';
 import 'package:eyebody/view/utils.dart';
 import 'package:eyebody/view/workout.dart';
 import 'package:flutter/material.dart';
@@ -84,7 +85,17 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         TextButton(
                           child: const Text("눈바디"),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (ctx) => EyeBodyAddPage(
+                                eyeBody: EyeBody(
+                                  date: Utils.getFormatTime(DateTime.now()),
+                                  weight: 0,
+                                  image: "",
+                                ),
+                              ),
+                            ));
+                          },
                         ),
                       ],
                     ));
