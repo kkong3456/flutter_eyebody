@@ -21,6 +21,12 @@ class _EyeBodyAddPageState extends State<EyeBodyAddPage> {
   EyeBody get eyeBody => widget.eyeBody;
 
   @override
+  void initState() {
+    weightController.text = eyeBody.weight.toString();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(

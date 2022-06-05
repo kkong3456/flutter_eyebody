@@ -23,6 +23,13 @@ class _WorkoutAddPageState extends State<WorkoutAddPage> {
   Workout get workout => widget.workout;
 
   @override
+  void initState() {
+    nameController.text = workout.name;
+    timeController.text = workout.time.toString();
+    memoController.text = workout.memo;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

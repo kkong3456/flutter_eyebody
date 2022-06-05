@@ -68,7 +68,8 @@ class DatabaseHelper {
       return await db.insert(foodTable, map);
     } else {
       final map = food.toMap();
-      return await db.update(foodTable, map);
+      return await db
+          .update(foodTable, map, where: "id=?", whereArgs: [food.id]);
     }
   }
 
@@ -104,7 +105,8 @@ class DatabaseHelper {
       return await db.insert(workoutTable, map);
     } else {
       final map = workout.toMap();
-      return await db.update(workoutTable, map);
+      return await db
+          .update(workoutTable, map, where: "id=?", whereArgs: [workout.id]);
     }
   }
 
@@ -141,7 +143,8 @@ class DatabaseHelper {
       return await db.insert(eyeBodyTable, map);
     } else {
       final map = eyeBody.toMap();
-      return await db.update(eyeBodyTable, map);
+      return await db
+          .update(eyeBodyTable, map, where: "id=?", whereArgs: [eyeBody.id]);
     }
   }
 

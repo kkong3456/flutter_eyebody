@@ -95,6 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
           onTap: (idx) {
             setState(() {
               currentIndex = idx;
+              if (currentIndex == 0 || currentIndex == 1) {
+                time = DateTime.now();
+                getHistories();
+              }
             });
           }),
 
@@ -184,38 +188,75 @@ class _MyHomePageState extends State<MyHomePage> {
     return Container(
         child: Column(
       children: [
-        Container(
-            height: 140,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: List.generate(todayFood.length, (idx) {
-                return Container(
-                  width: 140,
-                  child: FoodCard(food: todayFood[idx]),
-                );
-              }),
-            )),
-        Container(
-            height: 140,
-            child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: List.generate(todayWorkout.length, (idx) {
-                  return Container(
-                    width: 140,
-                    child: WorkoutCard(workout: todayWorkout[idx]),
-                  );
-                }))),
-        Container(
-            height: 140,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: List.generate(todayEyeBody.length, (idx) {
-                return Container(
-                  width: 140,
-                  child: EyeBodyCard(eyeBody: todayEyeBody[idx]),
-                );
-              }),
-            ))
+        todayFood.isEmpty
+            ? Container()
+            : Container(
+                height: 140,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: List.generate(todayFood.length, (idx) {
+                    return InkWell(
+                        child: Container(
+                          width: 140,
+                          child: FoodCard(food: todayFood[idx]),
+                        ),
+                        onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) => FoodAddPage(
+                                food: todayFood[idx],
+                              ),
+                            ),
+                          );
+                        });
+                  }),
+                )),
+        todayWorkout.isEmpty
+            ? Container()
+            : Container(
+                height: 140,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: List.generate(todayWorkout.length, (idx) {
+                    return InkWell(
+                        child: Container(
+                          width: 140,
+                          child: WorkoutCard(workout: todayWorkout[idx]),
+                        ),
+                        onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) => WorkoutAddPage(
+                                workout: todayWorkout[idx],
+                              ),
+                            ),
+                          );
+                        });
+                  }),
+                ),
+              ),
+        todayEyeBody.isEmpty
+            ? Container()
+            : Container(
+                height: 140,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: List.generate(todayEyeBody.length, (idx) {
+                    return InkWell(
+                        child: Container(
+                          width: 140,
+                          child: EyeBodyCard(eyeBody: todayEyeBody[idx]),
+                        ),
+                        onTap: () async {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (ctx) =>
+                                  EyeBodyAddPage(eyeBody: todayEyeBody[idx]),
+                            ),
+                          );
+                        });
+                  }),
+                ))
       ],
     ));
   }
@@ -225,6 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: ListView(
       children: [
         TableCalendar(
+            initialSelectedDay: time,
             calendarController: controller,
             onDaySelected: (date, events, holidays) {
               time = date;
