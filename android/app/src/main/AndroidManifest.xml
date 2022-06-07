@@ -7,7 +7,8 @@
    <application
         android:label="eyebody"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        >
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -33,6 +34,7 @@
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
-            android:value="2" />
+            android:value="2" 
+        />
     </application>
 </manifest>

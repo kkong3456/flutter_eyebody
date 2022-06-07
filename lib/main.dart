@@ -5,13 +5,30 @@ import 'package:eyebody/view/utils.dart';
 import 'package:eyebody/view/workout.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'view/food.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
-void main() {
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+void main() async {
   runApp(const MyApp());
+  tz.initializeTimeZones();
+
+  const AndroidNotificationChannel androidNotificationChannel =
+      AndroidNotificationChannel(
+          "fastcampus", "eyebody", "eyebody notification");
+
+  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(androidNotificationChannel);
 }
 
 class MyApp extends StatelessWidget {
@@ -68,10 +85,51 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
+  Future<bool> initNotification() async {
+    if (flutterLocalNotificationsPlugin == null) {
+      flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    }
+    var initSettingAndroid = AndroidInitializationSettings("app_icon");
+    var initiOS = IOSInitializationSettings();
+
+    var initSetting =
+        InitializationSettings(android: initSettingAndroid, iOS: initiOS);
+
+    await flutterLocalNotificationsPlugin.initialize(initSetting,
+        onSelectNotification: (playload) async {});
+
+    setScheduling();
+    return true;
+  }
+
   @override
   void initState() {
     getHistories();
+    initNotification();
     super.initState();
+  }
+
+  void setScheduling() async {
+    var android = AndroidNotificationDetails(
+        "fastcampus", "eyebody", "eyebody notification",
+        importance: Importance.max, priority: Priority.max);
+
+    var ios = IOSNotificationDetails();
+
+    NotificationDetails detail =
+        NotificationDetails(iOS: ios, android: android);
+
+    flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        "오늘 다이어트를 기록해 주세요!",
+        "앱에서 기록을 알려주세요!!",
+        tz.TZDateTime.from(DateTime.now().add(Duration(seconds: 10)), tz.local),
+        detail,
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: "eyebody",
+        matchDateTimeComponents: DateTimeComponents.time);
   }
 
   @override
