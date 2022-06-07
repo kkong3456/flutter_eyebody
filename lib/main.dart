@@ -61,6 +61,13 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
+  void getAllHistories() async {
+    todayFood = await dbHelper.queryAllFood();
+    todayWorkout = await dbHelper.queryAllWorkout();
+    todayEyeBody = await dbHelper.queryAllEyeBody();
+    setState(() {});
+  }
+
   @override
   void initState() {
     getHistories();
@@ -98,76 +105,83 @@ class _MyHomePageState extends State<MyHomePage> {
               if (currentIndex == 0 || currentIndex == 1) {
                 time = DateTime.now();
                 getHistories();
+              } else if (currentIndex == 2 || currentIndex == 3) {
+                getAllHistories();
               }
             });
           }),
 
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-              context: context,
-              backgroundColor: Colors.white,
-              builder: (ctx) {
-                return SizedBox(
-                    height: 200,
-                    child: Column(
-                      children: [
-                        TextButton(
-                            child: const Text("식단"),
-                            onPressed: () async {
-                              await Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (ctx) => FoodAddPage(
-                                    food: Food(
-                                      date: Utils.getFormatTime(time),
-                                      kcal: 0,
-                                      memo: "",
-                                      type: 0,
-                                      image: "",
-                                    ),
-                                  ),
-                                ),
-                              );
-                              getHistories();
-                            }),
-                        TextButton(
-                          child: const Text("운동"),
-                          onPressed: () async {
-                            await Navigator.of(context).push(MaterialPageRoute(
-                                builder: (ctx) => WorkoutAddPage(
-                                      workout: Workout(
+      floatingActionButton: [2, 3].contains(currentIndex)
+          ? Container()
+          : FloatingActionButton(
+              onPressed: () {
+                showModalBottomSheet(
+                    context: context,
+                    backgroundColor: Colors.white,
+                    builder: (ctx) {
+                      return SizedBox(
+                          height: 200,
+                          child: Column(
+                            children: [
+                              TextButton(
+                                  child: const Text("식단"),
+                                  onPressed: () async {
+                                    await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (ctx) => FoodAddPage(
+                                          food: Food(
+                                            date: Utils.getFormatTime(time),
+                                            kcal: 0,
+                                            memo: "",
+                                            type: 0,
+                                            image: "",
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                    getHistories();
+                                  }),
+                              TextButton(
+                                child: const Text("운동"),
+                                onPressed: () async {
+                                  await Navigator.of(context)
+                                      .push(MaterialPageRoute(
+                                          builder: (ctx) => WorkoutAddPage(
+                                                workout: Workout(
+                                                  date:
+                                                      Utils.getFormatTime(time),
+                                                  time: 0,
+                                                  memo: "",
+                                                  name: "",
+                                                  image: "",
+                                                ),
+                                              )));
+                                  getHistories();
+                                },
+                              ),
+                              TextButton(
+                                child: const Text("눈바디"),
+                                onPressed: () async {
+                                  await Navigator.of(context)
+                                      .push(MaterialPageRoute(
+                                    builder: (ctx) => EyeBodyAddPage(
+                                      eyeBody: EyeBody(
                                         date: Utils.getFormatTime(time),
-                                        time: 0,
-                                        memo: "",
-                                        name: "",
+                                        weight: 0,
                                         image: "",
                                       ),
-                                    )));
-                            getHistories();
-                          },
-                        ),
-                        TextButton(
-                          child: const Text("눈바디"),
-                          onPressed: () async {
-                            await Navigator.of(context).push(MaterialPageRoute(
-                              builder: (ctx) => EyeBodyAddPage(
-                                eyeBody: EyeBody(
-                                  date: Utils.getFormatTime(time),
-                                  weight: 0,
-                                  image: "",
-                                ),
+                                    ),
+                                  ));
+                                  getHistories();
+                                },
                               ),
-                            ));
-                            getHistories();
-                          },
-                        ),
-                      ],
-                    ));
-              });
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+                            ],
+                          ));
+                    });
+              },
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+            ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
@@ -278,11 +292,32 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget getChartPage() {
-    return Container();
+    return Container(
+      child: Column(children: [
+        getMainPage(),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Text("총 기록 식단 수\n${todayFood.length}", textAlign: TextAlign.center),
+            Text("총 기록 운동 횟수\n${todayWorkout.length}",
+                textAlign: TextAlign.center),
+            Text("총 기록 눈바디 수\n${todayEyeBody.length}",
+                textAlign: TextAlign.center),
+          ],
+        )
+      ]),
+    );
   }
 
   Widget getGalleryPage() {
-    return Container();
+    return Container(
+        child: GridView.count(
+      crossAxisCount: 3,
+      childAspectRatio: 1,
+      children: List.generate(todayEyeBody.length, (idx) {
+        return EyeBodyCard(eyeBody: todayEyeBody[idx]);
+      }),
+    ));
   }
 }
 
@@ -335,7 +370,7 @@ class WorkoutCard extends StatelessWidget {
           children: [
             Positioned.fill(
               child: AssetThumb(
-                  asset: Asset(workout.image, "food.png", 0, 0),
+                  asset: Asset(workout.image, "workout.png", 0, 0),
                   width: 300,
                   height: 300),
             ),
@@ -371,7 +406,7 @@ class EyeBodyCard extends StatelessWidget {
           children: [
             Positioned.fill(
               child: AssetThumb(
-                  asset: Asset(eyeBody.image, "food.png", 0, 0),
+                  asset: Asset(eyeBody.image, "eyebody.png", 0, 0),
                   width: 300,
                   height: 300),
             ),
