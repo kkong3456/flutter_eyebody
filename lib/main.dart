@@ -135,11 +135,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFFDFDFD),
       appBar: AppBar(
         title: Text(widget.title),
       ),
       body: getPage(),
       bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Color(0xFFCCCCCC),
+          unselectedItemColor: Colors.white,
           type: BottomNavigationBarType.fixed, //4개이상 아이템생성시 반드시  타입을 지정해야 함
           items: [
             BottomNavigationBarItem(
@@ -370,7 +373,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget getGalleryPage() {
     return Container(
         child: GridView.count(
-      crossAxisCount: 3,
+      crossAxisCount: 2,
       childAspectRatio: 1,
       children: List.generate(todayEyeBody.length, (idx) {
         return EyeBodyCard(eyeBody: todayEyeBody[idx]);
